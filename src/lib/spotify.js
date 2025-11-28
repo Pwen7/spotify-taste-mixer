@@ -1,3 +1,5 @@
+import { getAccessToken } from './auth';
+
 export async function generatePlaylist(preferences) {
     const { artists, genres, decades, popularity } = preferences;
     const token = getAccessToken();
@@ -52,4 +54,16 @@ export async function generatePlaylist(preferences) {
     ).slice(0, 30);
 
     return uniqueTracks;
-  }
+}
+  
+export async function getUserProfile() {
+    const token = getAccessToken()
+    if (!token) return null
+    
+    const res = await fetch('https://api.spotify.com/v1/me', {
+        headers: { Authorization: token }
+    })
+
+    if (!res) return null
+    return res.json()
+}
