@@ -55,15 +55,16 @@ export async function generatePlaylist(preferences) {
 
     return uniqueTracks;
 }
-  
+
 export async function getUserProfile() {
     const token = getAccessToken()
-    if (!token) return null
-    
+    if (!token) throw new Error('No token access')
+
     const res = await fetch('https://api.spotify.com/v1/me', {
-        headers: { Authorization: token }
+        headers: {
+            'Authorization': `Bearer ${token}` }
     })
 
-    if (!res) return null
+    if (!res) throw new Error('Profile error')
     return res.json()
 }
