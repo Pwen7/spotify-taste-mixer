@@ -61,6 +61,40 @@ export function getAccessToken() {
     return token;
 }
 
+export async function getValidAccessToken() {
+    const token = localStorage.getItem('spotify_token');
+    const expiration = localStorage.getItem('spotify_token_expiration');
+    const refreshToken = localStorage.getItem('spotify_refresh_token');
+
+    // Si no hay refresh token, no podemos hacer nada
+    if (!refreshToken) return null;
+
+    // Si el token existe y no está caducado, úsalo
+    if (token && expiration && Date.now() < parseInt(expiration)) {
+        return token;
+    }
+
+    // Si está caducado, intentamos refrescarlo
+    try {
+        const res = await fetch('/api/refresh-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refreshToken }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al refrescar token');
+
+        // Guardar nuevo token manteniendo el mismo refresh token
+        saveTokens(data.access_token, refreshToken, data.expires_in);
+        return data.access_token;
+    } catch (err) {
+        console.error('Error refreshing token', err);
+        logout();
+        return null;
+    }
+}
+
 // Verificar si hay token válido
 export function isAuthenticated() {
     return getAccessToken() !== null;

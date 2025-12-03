@@ -8,18 +8,18 @@ import { getUserProfile } from "@/lib/spotify";
 
 export default function Header() {
     const router = useRouter()
+    const [profile, setProfile] = useState(null)
+
     const handleLogout = () => {
         logout()
         router.push('/')
-    }
-
-    const [profile, setProfile] = useState(null)
+    }    
 
     const fetchProfile = async () => {
         try {
             setProfile(await getUserProfile())
         } catch (e) {
-            throw Error(e)
+            console.error('Error al cargar perfil:', e);
         }
     }
 
