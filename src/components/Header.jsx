@@ -5,6 +5,7 @@ import { logout } from "@/lib/auth"
 import { MdOutlineExitToApp, MdMusicNote } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "@/lib/spotify";
+import Image from "next/image";
 
 export default function Header() {
     const router = useRouter()
@@ -13,17 +14,16 @@ export default function Header() {
     const handleLogout = () => {
         logout()
         router.push('/')
-    }    
-
-    const fetchProfile = async () => {
-        try {
-            setProfile(await getUserProfile())
-        } catch (e) {
-            console.error('Error al cargar perfil:', e);
-        }
     }
 
     useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                setProfile(await getUserProfile())
+            } catch (e) {
+                console.error('ERROR loading the profile:', e);
+            }
+        }
         fetchProfile()
     }, [])
 
@@ -53,8 +53,11 @@ export default function Header() {
                     </div>
                 )}
                 {profile?.images?.[0]?.url && (
-                    <img
+                    <Image
                         src={profile.images[0].url}
+                        alt={profile.display_name || "User image"}
+                        width={36}
+                        height={36}
                         className="h-8 w-8 rounded-full border border-white object-cover md:h-9 md:w-9"
                     />
                 )}

@@ -1,8 +1,37 @@
-import { getAccessToken } from './auth';
+import { getValidAccessToken, logout } from './auth';
+
+async function getApi(path) {
+    const token = await getValidAccessToken()
+
+    if (!token) { throw new Error('ERROR no access token') }
+
+    const res = await fetch(`https://api.spotify.com/v1${path}`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+
+    if (!res.ok) { throw new Error('ERROR getting the API') }
+    return res.json()
+}
+
+export async function getUserProfile() {
+    return getApi('/me')
+}
+
+export async function getTopArtists(limit = 5, timeRange = 'medium_term') {
+    const params = new URLSearchParams({
+        limit: String(limit),
+        time_range: timeRange,
+    })
+
+    const data = await getApi(`/me/top/artists?${params.toString()}`)
+    return data.items
+}
 
 export async function generatePlaylist(preferences) {
     const { artists, genres, decades, popularity } = preferences;
-    const token = getAccessToken();
+    const token = await getValidAccessToken();
     let allTracks = [];
 
     // 1. Obtener top tracks de artistas seleccionados
@@ -56,15 +85,3 @@ export async function generatePlaylist(preferences) {
     return uniqueTracks;
 }
 
-export async function getUserProfile() {
-    const token = getAccessToken()
-    if (!token) throw new Error('No token access')
-
-    const res = await fetch('https://api.spotify.com/v1/me', {
-        headers: {
-            'Authorization': `Bearer ${token}` }
-    })
-
-    if (!res) throw new Error('Profile error')
-    return res.json()
-}
