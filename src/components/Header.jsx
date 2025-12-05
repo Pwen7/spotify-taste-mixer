@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { logout } from "@/lib/auth"
 import { MdOutlineExitToApp, MdMusicNote } from "react-icons/md";
 import { useEffect, useState } from "react";
@@ -9,10 +9,12 @@ import Image from "next/image";
 
 export default function Header() {
     const router = useRouter()
+    const pathname = usePathname()
     const [profile, setProfile] = useState(null)
 
     const handleLogout = () => {
         logout()
+        setProfile(null)
         router.push('/')
     }
 
@@ -21,11 +23,13 @@ export default function Header() {
             try {
                 setProfile(await getUserProfile())
             } catch (e) {
-                console.error('ERROR loading the profile:', e);
+                console.error('ERROR loading the profile:', e)
+                setProfile(null)
+                logout()
             }
         }
         fetchProfile()
-    }, [])
+    }, [pathname])
 
 
     return (
@@ -52,6 +56,13 @@ export default function Header() {
                         </span>
                     </div>
                 )}
+                {!profile && (
+                    <div className="hidden flex-col items-end text-right leading-tight md:flex">
+                        <span className="text-[11px]">
+                            Session inactive
+                        </span>
+                    </div>
+                )}
                 {profile?.images?.[0]?.url && (
                     <Image
                         src={profile.images[0].url}
@@ -61,12 +72,14 @@ export default function Header() {
                         className="h-8 w-8 rounded-full border border-white object-cover md:h-9 md:w-9"
                     />
                 )}
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-1 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-black hover:text-[#1db954] hover:shadow-lg hover:shadow-black/40 md:px-4 md:py-2 md:text-sm"
-                >
-                    <MdOutlineExitToApp></MdOutlineExitToApp>
-                </button>
+                {profile && (
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-1 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-black hover:text-[#1db954] hover:shadow-lg hover:shadow-black/40 md:px-4 md:py-2 md:text-sm"
+                    >
+                        <MdOutlineExitToApp />
+                    </button>
+                )}
             </div>
 
         </nav>

@@ -3,13 +3,18 @@ import { getValidAccessToken, logout } from './auth';
 async function getApi(path) {
     const token = await getValidAccessToken()
 
-    if (!token) { throw new Error('ERROR no access token') }
+    if (!token) { null }
 
     const res = await fetch(`https://api.spotify.com/v1${path}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
     })
+
+    if (res.status === 401) {
+        logout();
+        return null;
+      }
 
     if (!res.ok) { throw new Error('ERROR getting the API') }
     return res.json()
@@ -27,6 +32,27 @@ export async function getTopArtists(limit = 5, timeRange = 'medium_term') {
 
     const data = await getApi(`/me/top/artists?${params.toString()}`)
     return data.items
+}
+
+export async function getTopTracks(limit = 10, timeRange = 'medium_term') {
+    const params = new URLSearchParams({
+        limit: String(limit),
+        time_range: timeRange,
+    });
+
+    const data = await getApi(`/me/top/tracks?${params.toString()}`);
+    return data.items;
+}
+
+export async function getAudioFeaturesForTracks(trackIds) {
+    if (!trackIds.length) return []
+
+    const params = new URLSearchParams({
+        ids: trackIds.join(','),
+    })
+
+    const data = await getApi(`/audio-features?${params.toString()}`);
+    return data.audio_features
 }
 
 export async function generatePlaylist(preferences) {
