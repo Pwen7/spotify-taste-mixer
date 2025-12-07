@@ -3,7 +3,7 @@ import { getValidAccessToken, logout } from './auth';
 async function getApi(path) {
     const token = await getValidAccessToken()
 
-    if (!token) { null }
+    if (!token) { return null }
 
     const res = await fetch(`https://api.spotify.com/v1${path}`, {
         headers: {
@@ -12,11 +12,14 @@ async function getApi(path) {
     })
 
     if (res.status === 401) {
-        logout();
-        return null;
-      }
+        logout()
+        return null
+    }
 
-    if (!res.ok) { throw new Error('ERROR getting the API') }
+    if (!res.ok) {
+        console.error('ERROR getting the API')
+        return null
+    }
     return res.json()
 }
 
@@ -24,35 +27,21 @@ export async function getUserProfile() {
     return getApi('/me')
 }
 
-export async function getTopArtists(limit = 5, timeRange = 'medium_term') {
-    const params = new URLSearchParams({
-        limit: String(limit),
-        time_range: timeRange,
-    })
-
-    const data = await getApi(`/me/top/artists?${params.toString()}`)
-    return data.items
+export async function searchArtists(query, limit = 5) {
+    if (!query) { return null }
+    const q = encodeURIComponent(query)
+    return getApi(`/search?type=artist&q=${q}&limit=${limit}`)
 }
 
-export async function getTopTracks(limit = 10, timeRange = 'medium_term') {
-    const params = new URLSearchParams({
-        limit: String(limit),
-        time_range: timeRange,
-    });
-
-    const data = await getApi(`/me/top/tracks?${params.toString()}`);
-    return data.items;
+export async function searchTracks(query, limit = 10) {
+    if (!query) { return null }
+    const q = encodeURIComponent(query)
+    return getApi(`/search?type=track&q=${q}&limit=${limit}`)
 }
 
-export async function getAudioFeaturesForTracks(trackIds) {
-    if (!trackIds.length) return []
-
-    const params = new URLSearchParams({
-        ids: trackIds.join(','),
-    })
-
-    const data = await getApi(`/audio-features?${params.toString()}`);
-    return data.audio_features
+export function getArtistTopTracks(artistId, market) {
+    if (!artistId) { return null }
+    return getApi(`/artists/${artistId}/top-tracks?market=${market}`)
 }
 
 export async function generatePlaylist(preferences) {
