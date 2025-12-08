@@ -36,7 +36,7 @@ export default function ArtistWidget({ selectedArtists, onChange }) {
     }
 
     return (
-        <div className="p-4 bg-[#121212] rounded-xl">
+        <div className="p-4 bg-[#121212] rounded-xl m-5">
             <div className="flex justify-between items-center mb-3">
                 <h2 className="font-bold">Artists</h2>
                 <div className="text-sm ">
@@ -58,10 +58,10 @@ export default function ArtistWidget({ selectedArtists, onChange }) {
                     {selectedArtists.map(artist => (
                         <div
                             key={artist.id}
-                            className="inline-flex items-center gap-1 pl-1 pr-2 py-1 bg-[#212121] rounded-full text-xs"
+                            className="inline-flex items-center gap-1 pl-1 pr-2 py-1 bg-[#212121] rounded-full text-sm"
                         >
                             {artist.images?.[0]?.url && (
-                                <div className="relative w-5 h-5">
+                                <div className="relative w-6 h-6">
                                     <Image
                                         src={artist.images[0].url}
                                         alt={artist.name}
@@ -71,7 +71,7 @@ export default function ArtistWidget({ selectedArtists, onChange }) {
                                     />
                                 </div>
                             )}
-                            <div className="truncate max-w-[70px]">{artist.name}</div>
+                            <div className="truncate max-w-[75px]">{artist.name}</div>
                             <button
                                 onClick={() => toggleArtist(artist)}
                                 className="text-base text-[#b3b3b3] hover:text-white transition-colors"
@@ -84,7 +84,7 @@ export default function ArtistWidget({ selectedArtists, onChange }) {
             )}
 
             {/* Search results */}
-            <div className="max-h-40 overflow-y-auto space-y-1">
+            <div className="max-h-120 overflow-y-auto space-y-1">
                 {loading ? (
                     <div className="flex justify-center py-4">
                         <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-[#1db954]"></div>
@@ -109,7 +109,7 @@ export default function ArtistWidget({ selectedArtists, onChange }) {
                                 )}
 
                                 {artist.images?.[0]?.url && (
-                                    <div className="relative w-7 h-7">
+                                    <div className="relative w-9 h-9">
                                         <Image
                                             src={artist.images[0].url}
                                             alt={artist.name}

@@ -76,22 +76,17 @@ export default function TrackCard({ track, onRemove, onToggleFavorite }) {
                 </div>
             </div>
 
-            {/* Botones */}
             <div className="flex items-center gap-2">
                 <button
-                    type="button"
                     onClick={handleFavoriteClick}
                     className="p-2 hover:text-[#1db954] transition-colors"
-                    aria-label="Toggle favorite"
                 >
                     {isFavorite ? <FaHeart className="text-[#1db954]" /> : <FaRegHeart />}
                 </button>
 
                 <button
-                    type="button"
                     onClick={() => onRemove && onRemove(track.id)}
                     className="p-2 hover:text-red-500 transition-colors"
-                    aria-label="Remove track"
                 >
                     <FaTrash />
                 </button>

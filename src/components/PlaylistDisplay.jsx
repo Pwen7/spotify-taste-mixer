@@ -10,7 +10,7 @@ export default function PlaylistDisplay({
     onAddMore,
 }) {
     return (
-        <div className="p-4 bg-[#121212] rounded-xl border border-[#2a2a2a]">
+        <div className="p-4 bg-[#121212] rounded-xl border border-[#2a2a2a] m-5">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h2 className="font-bold text-lg">Your Playlist</h2>
@@ -43,9 +43,6 @@ export default function PlaylistDisplay({
             {playlist.length === 0 ? (
                 <div className="text-center py-8">
                     <div className="text-gray-400 mb-2">No tracks yet</div>
-                    <div className="text-sm text-gray-500">
-                        Configure your filters and click &quot;Generate Playlist&quot;
-                    </div>
                 </div>
             ) : (
                 <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">

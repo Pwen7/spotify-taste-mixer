@@ -17,16 +17,16 @@ export default function GenreWidget({ selectedGenres, onChange }) {
         if (selectedGenres.includes(genre)) {
             onChange(selectedGenres.filter(g => g !== genre))
         } else {
-            if (selectedGenres.length >= 3) { return }
+            if (selectedGenres.length >= 4) { return }
             onChange([...selectedGenres, genre])
         }
     }
     return (
-        <div className="p-4 bg-[#121212] rounded-xl">
+        <div className="p-4 bg-[#121212] rounded-xl m-5">
             <div className="flex justify-between items-center mb-3">
                 <h2 className="font-bold">Genres</h2>
                 <div className="text-sm ">
-                    {selectedGenres.length}/3
+                    {selectedGenres.length}/4
                 </div>
             </div>
 
@@ -42,7 +42,7 @@ export default function GenreWidget({ selectedGenres, onChange }) {
                     {selectedGenres.map(genre => (
                         <div
                             key={genre}
-                            className="inline-flex items-center gap-1 pl-3 pr-2 py-1 bg-[#212121] rounded-full text-xs"
+                            className="inline-flex items-center gap-1 pl-3 pr-2 py-1 bg-[#212121] rounded-full text-sm"
                         >
                             <div className="truncate max-w-[70px]">{genre}</div>
                             <button
@@ -56,7 +56,7 @@ export default function GenreWidget({ selectedGenres, onChange }) {
                 </div>
             )}
 
-            <div className="max-h-40 overflow-y-auto space-y-1">
+            <div className="max-h-120 overflow-y-auto space-y-1">
                 <div className="flex flex-wrap gap-2">
                     {filtered.map(genre => {
                         const isSelected = selectedGenres.includes(genre)

@@ -2,20 +2,26 @@
 
 import { useRouter, usePathname } from "next/navigation"
 import { logout } from "@/lib/auth"
-import { MdOutlineExitToApp, MdMusicNote } from "react-icons/md";
+import { MdOutlineExitToApp, MdMusicNote, MdMenu, MdClose } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "@/lib/spotify";
 import Image from "next/image";
+import NavBar from "./NavBar";
 
 export default function Header() {
     const router = useRouter()
     const pathname = usePathname()
     const [profile, setProfile] = useState(null)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const handleLogout = () => {
         logout()
         setProfile(null)
         router.push('/')
+    }
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen)
     }
 
     useEffect(() => {
@@ -31,57 +37,101 @@ export default function Header() {
         fetchProfile()
     }, [pathname])
 
+    useEffect(() => {
+        setIsMenuOpen(false)
+    }, [pathname])
 
     return (
-        <nav className="bg-[#1db954] w-full p-2 flex items-center justify-between">
-            <div className="flex items-center gap-2 md:gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/90 shadow-md shadow-[#212121]">
-                    <MdMusicNote className="text-xl" />
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-sm font-semibold tracking-wide md:text-base">
-                        Spotify Taste Mixer
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-3 md:gap-4">
-                {profile && (
-                    <div className="hidden flex-col items-end text-right leading-tight md:flex">
-                        <span className="text-[14px]">
-                            {profile.display_name}
-                        </span>
-                        <span className="text-[11px]">
-                            Session active
+        <>
+            <div className="bg-[#1db954] w-full p-2 flex items-center justify-between relative text-black/90" >
+                <div className="flex items-center gap-2 md:gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/90 shadow-md shadow-[#212121]">
+                        <MdMusicNote className="text-xl text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-sm font-semibold tracking-wide md:text-base ">
+                            Spotify Taste Mixer
                         </span>
                     </div>
-                )}
-                {!profile && (
-                    <div className="hidden flex-col items-end text-right leading-tight md:flex">
-                        <span className="text-[11px]">
-                            Session inactive
-                        </span>
+                </div>
+
+                {profile && (
+                    <div className="hidden md:block">
+                        <NavBar />
                     </div>
                 )}
-                {profile?.images?.[0]?.url && (
-                    <Image
-                        src={profile.images[0].url}
-                        alt={profile.display_name || "User image"}
-                        width={36}
-                        height={36}
-                        className="h-8 w-8 rounded-full border border-white object-cover md:h-9 md:w-9"
-                    />
-                )}
-                {profile && (
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-1 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black hover:text-[#1db954] hover:shadow-lg hover:shadow-black/40 md:px-4 md:py-2 md:text-sm cursor-pointer"
-                    >
-                        <MdOutlineExitToApp />
-                    </button>
+
+                <div className="flex items-center gap-3 md:gap-4">
+                    {profile && (
+                        <div className="hidden flex-col items-end text-right leading-tight md:flex">
+                            <span className="text-[14px]">
+                                {profile.display_name}
+                            </span>
+                            <span className="text-[11px]">
+                                Session active
+                            </span>
+                        </div>
+                    )}
+                    {!profile && (
+                        <div className="hidden flex-col items-end text-right leading-tight md:flex">
+                            <span className="text-[11px]">
+                                Session inactive
+                            </span>
+                        </div>
+                    )}
+
+                    {profile?.images?.[0]?.url && (
+                        <Image
+                            src={profile.images[0].url}
+                            alt={profile.display_name || "User image"}
+                            width={36}
+                            height={36}
+                            className="h-8 w-8 rounded-full border border-white object-cover md:h-9 md:w-9"
+                        />
+                    )}
+
+                    {profile && (
+                        <>
+                            {/* Botón logout en desktop, menú hamburguesa en móvil */}
+                            <button
+                                onClick={handleLogout}
+                                className="hidden md:flex items-center gap-1 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black hover:text-[#1db954] hover:shadow-lg hover:shadow-black/40 md:px-4 md:py-2 md:text-sm cursor-pointer"
+                            >
+                                <MdOutlineExitToApp />
+                            </button>
+
+                            {/* Humburger*/}
+                            <button
+                                onClick={toggleMenu}
+                                className="md:hidden flex items-center justify-center rounded-full text-white bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954]"
+                                aria-label="Toggle menu"
+                            >
+                                {isMenuOpen ? (
+                                    <MdClose className="text-lg" />
+                                ) : (
+                                    <MdMenu className="text-lg" />
+                                )}
+                            </button>
+                        </>
+                    )}
+                </div>
+
+                {isMenuOpen && profile && (
+                    <div className="absolute top-full border-t-2 shadow-lg md:hidden z-50 p-3 bg-[#1db954]">
+                        <nav className="space-y-1">
+                            <div className="flex items-center justify-between gap-2">
+                                <NavBar />
+                                <button
+                                    onClick={handleLogout}
+                                    className="md:hidden flex items-center justify-center rounded-full bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954]"
+                                >
+                                    <MdOutlineExitToApp className="text-lg text-white hover:text-[#1db954]" />
+                                </button>
+                            </div>
+                        </nav>
+                    </div>
                 )}
             </div>
-
-        </nav>
+        </>
     )
 }
