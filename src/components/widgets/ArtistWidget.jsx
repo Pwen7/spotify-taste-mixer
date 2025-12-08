@@ -1,84 +1,142 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { getArtists } from '@/lib/spotify'
+import { searchArtists } from '@/lib/spotify'
+import { MdCheckBox, MdCheckBoxOutlineBlank, MdClose } from "react-icons/md"
 
-export default function ArtistWidget({ artists, onChange }) {
+export default function ArtistWidget({ selectedArtists, onChange }) {
     const [query, setQuery] = useState('')
     const [results, setResults] = useState([])
-    const [timer, setTimer] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        if (timer) clearTimeout(timer);
         if (!query) {
-            setResults([]);
-            return;
+            setResults([])
+            return
         }
-        setTimer(setTimeout(async () => {
-            try {
-                const res = await searchArtists(query);
-                setResults(res);
-            } catch {
-                setResults([]);
-            }
-        }, 400));
-    }, [query]);
 
+        const timer = setTimeout(async () => {
+            setLoading(true)
+            const data = await searchArtists(query)
+            setResults(data?.artists?.items || [])
+            setLoading(false)
+        }, 400)
 
-    const isSelected = (a) => selectedArtists.some(s => s.id === a.id)
+        return () => clearTimeout(timer)
+    }, [query])
 
-    const toggle = (artist) => {
-        if (isSelected(artist)) {
-            onChange(selectedArtists.filter(s => s.id !== artist.id))
+    function toggleArtist(artist) {
+        if (selectedArtists.find(a => a.id === artist.id)) {
+            onChange(selectedArtists.filter(a => a.id !== artist.id))
         } else {
-            onChange([...selectedArtists, artist]);
+            if (selectedArtists.length >= 5) { return }
+            onChange([...selectedArtists, artist])
         }
     }
 
     return (
-        <div className="p-3 bg-[#121212] rounded">
-            <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm text-white">Artist selector</h3>
-                <span className="text-xs text-gray-300">{selectedArtists.length}</span>
+        <div className="p-4 bg-[#121212] rounded-xl">
+            <div className="flex justify-between items-center mb-3">
+                <h2 className="font-bold">Artists</h2>
+                <div className="text-sm ">
+                    {selectedArtists.length}/5
+                </div>
             </div>
+
 
             <input
                 value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder="Search artists..."
-                className="w-full mb-3 px-2 py-1 rounded bg-white/10 text-sm text-white"
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search artists"
+                className="w-full text-sm px-2 py-1 mb-3 rounded bg-[#212121]"
             />
 
-            <div className="space-y-2 max-h-64 overflow-auto">
-                {results.map(artist => (
-                    <button
-                        key={artist.id}
-                        onClick={() => toggle(artist)}
-                        className={`w-full flex items-center gap-2 p-2 rounded text-left ${isSelected(artist) ? 'bg-[#1db954]/80' : 'bg-white/5'
-                            }`}
-                    >
-                        {artist.images?.[0]?.url && (
-                            <Image
-                                src={artist.images[0].url}
-                                alt={artist.name}
-                                width={40}
-                                height={40}
-                                className="rounded-full object-cover"
-                            />
-                        )}
-                        <div>
-                            <div className="text-sm text-white">{artist.name}</div>
-                            {artist.genres?.length > 0 && (
-                                <div className="text-xs text-gray-300">{artist.genres.slice(0, 2).join(' • ')}</div>
+            {/* Selected*/}
+            {selectedArtists.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-3">
+                    {selectedArtists.map(artist => (
+                        <div
+                            key={artist.id}
+                            className="inline-flex items-center gap-1 pl-1 pr-2 py-1 bg-[#212121] rounded-full text-xs"
+                        >
+                            {artist.images?.[0]?.url && (
+                                <div className="relative w-5 h-5">
+                                    <Image
+                                        src={artist.images[0].url}
+                                        alt={artist.name}
+                                        fill
+                                        className="rounded-full object-cover"
+                                        sizes="20px"
+                                    />
+                                </div>
                             )}
+                            <div className="truncate max-w-[70px]">{artist.name}</div>
+                            <button
+                                onClick={() => toggleArtist(artist)}
+                                className="text-base text-[#b3b3b3] hover:text-white transition-colors"
+                            >
+                                <MdClose />
+                            </button>
                         </div>
-                    </button>
-                ))}
+                    ))}
+                </div>
+            )}
 
-                {query && results.length === 0 && (
-                    <div className="text-xs text-gray-400">No results</div>
-                )}
+            {/* Search results */}
+            <div className="max-h-40 overflow-y-auto space-y-1">
+                {loading ? (
+                    <div className="flex justify-center py-4">
+                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-[#1db954]"></div>
+                    </div>
+                ) : results.length > 0 ? (
+                    results.map(artist => {
+                        const isSelected = selectedArtists.find(a => a.id === artist.id)
+                        return (
+                            <button
+                                key={artist.id}
+                                onClick={() => toggleArtist(artist)}
+                                className={`flex items-center gap-2 w-full text-left p-2 rounded transition-colors
+                                    ${isSelected
+                                        ? 'bg-[#b3b3b3] text-[#121212]'
+                                        : 'bg-[#212121] hover:bg-[#535353]'
+                                    }`}
+                            >
+                                {isSelected ? (
+                                    <MdCheckBox className="text-[#1db954] bg-[#121212]" />
+                                ) : (
+                                    <MdCheckBoxOutlineBlank />
+                                )}
+
+                                {artist.images?.[0]?.url && (
+                                    <div className="relative w-7 h-7">
+                                        <Image
+                                            src={artist.images[0].url}
+                                            alt={artist.name}
+                                            fill
+                                            className="rounded-full object-cover"
+                                            sizes="24px"
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="flex-1 truncate">{artist.name}</div>
+                            </button>
+                        )
+                    })
+                ) : query ? (
+                    <div className="text-center py-4 text-sm ">
+                        No results
+                    </div>
+                ) : null}
+            </div>
+            <div className="flex mt-6">
+                <button
+                    onClick={() => onChange([])}
+                    className="flex-1 text-sm py-2 bg-[#212121] hover:bg-[#535353] rounded transition-colors"
+                >
+                    Reset
+                </button>
             </div>
         </div>
     )

@@ -75,7 +75,7 @@ export default function Header() {
                 {profile && (
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-1 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-black hover:text-[#1db954] hover:shadow-lg hover:shadow-black/40 md:px-4 md:py-2 md:text-sm"
+                        className="flex items-center gap-1 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black hover:text-[#1db954] hover:shadow-lg hover:shadow-black/40 md:px-4 md:py-2 md:text-sm cursor-pointer"
                     >
                         <MdOutlineExitToApp />
                     </button>

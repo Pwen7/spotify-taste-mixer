@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <>
       <div className='h-screen grid place-items-center'>
-        <button onClick={handleLogin} className='bg-[#1db954] hover:bg-[#1ba14a] font-bold px-4 py-2 rounded-lg'>
+        <button onClick={handleLogin} className='bg-[#1db954] hover:bg-[#1ba14a] font-bold px-4 py-2 rounded-lg cursor-pointer transition-colors'>
           Login
         </button>
       </div>
