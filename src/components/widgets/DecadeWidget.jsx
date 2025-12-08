@@ -21,7 +21,7 @@ export default function DecadeWidget({ selectedDecades, onChange }) {
         }
     }
     return (
-        <div className="p-4 bg-[#121212] rounded-xl">
+        <div className="p-4 bg-[#121212] rounded-xl m-5 mb-0">
             <h2 className="font-bold mb-2">Decades</h2>
             <div className="max-h-40 overflow-y-auto space-y-1">
                 <div className="flex flex-wrap gap-2">

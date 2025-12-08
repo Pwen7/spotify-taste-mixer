@@ -49,9 +49,9 @@ export default function Header() {
                         <MdMusicNote className="text-xl text-white" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-sm font-semibold tracking-wide md:text-base ">
+                        <div className="text-sm font-semibold tracking-wide md:text-base ">
                             Spotify Taste Mixer
-                        </span>
+                        </div>
                     </div>
                 </div>
 
@@ -64,19 +64,19 @@ export default function Header() {
                 <div className="flex items-center gap-3 md:gap-4">
                     {profile && (
                         <div className="hidden flex-col items-end text-right leading-tight md:flex">
-                            <span className="text-[14px]">
+                            <div className="text-[14px]">
                                 {profile.display_name}
-                            </span>
-                            <span className="text-[11px]">
+                            </div>
+                            <div className="text-[11px]">
                                 Session active
-                            </span>
+                            </div>
                         </div>
                     )}
                     {!profile && (
                         <div className="hidden flex-col items-end text-right leading-tight md:flex">
-                            <span className="text-[11px]">
+                            <div className="text-[11px]">
                                 Session inactive
-                            </span>
+                            </div>
                         </div>
                     )}
 
@@ -91,15 +91,17 @@ export default function Header() {
                     )}
 
                     {profile && (
-                        <>
-                            {/* Botón logout en desktop, menú hamburguesa en móvil */}
-                            <button
-                                onClick={handleLogout}
-                                className="hidden md:flex items-center gap-1 rounded-full bg-black/70 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-black hover:text-[#1db954] hover:shadow-lg hover:shadow-black/40 md:px-4 md:py-2 md:text-sm cursor-pointer"
-                            >
-                                <MdOutlineExitToApp />
-                            </button>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center justify-center rounded-full bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954]"
+                            aria-label="Logout"
+                        >
+                            <MdOutlineExitToApp className="text-lg text-white hover:text-[#1db954]" />
+                        </button>
+                    )}
 
+                    {profile && (
+                        <>
                             {/* Humburger*/}
                             <button
                                 onClick={toggleMenu}
@@ -121,12 +123,6 @@ export default function Header() {
                         <nav className="space-y-1">
                             <div className="flex items-center justify-between gap-2">
                                 <NavBar />
-                                <button
-                                    onClick={handleLogout}
-                                    className="md:hidden flex items-center justify-center rounded-full bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954]"
-                                >
-                                    <MdOutlineExitToApp className="text-lg text-white hover:text-[#1db954]" />
-                                </button>
                             </div>
                         </nav>
                     </div>

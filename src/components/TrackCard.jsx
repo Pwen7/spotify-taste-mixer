@@ -12,6 +12,7 @@ function formatDuration(ms) {
 }
 
 export default function TrackCard({ track, onRemove, onToggleFavorite }) {
+    const showControls = typeof onToggleFavorite === 'function'
     const [isFavorite, setIsFavorite] = useState(false)
 
     // Cargar estado inicial desde localStorage
@@ -45,7 +46,7 @@ export default function TrackCard({ track, onRemove, onToggleFavorite }) {
     }
 
     return (
-        <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#212121] transition-colors">
+        <div className="flex w-full items-center gap-3 p-3 rounded-lg hover:bg-[#212121] transition-colors">
             {track.album?.images?.[0]?.url && (
                 <div className="relative w-14 h-14 shrink-0">
                     <Image
@@ -59,7 +60,7 @@ export default function TrackCard({ track, onRemove, onToggleFavorite }) {
             )}
 
             {/* Info */}
-            <div className="flex flex-1 flex-col min-w-0">
+            <div className="flex flex-1 flex-col min-w-0 ">
                 <div className="truncate text-sm font-medium text-white">
                     {track.name}
                 </div>
@@ -76,13 +77,15 @@ export default function TrackCard({ track, onRemove, onToggleFavorite }) {
                 </div>
             </div>
 
-            <div className="flex items-center gap-2">
-                <button
-                    onClick={handleFavoriteClick}
-                    className="p-2 hover:text-[#1db954] transition-colors"
-                >
-                    {isFavorite ? <FaHeart className="text-[#1db954]" /> : <FaRegHeart />}
-                </button>
+            <div className="flex items-center gap-2 shrink-0">
+                {showControls && (
+                    <button
+                        onClick={handleFavoriteClick}
+                        className="p-2 hover:text-[#1db954] transition-colors"
+                    >
+                        {isFavorite ? <FaHeart className="text-[#1db954]" /> : <FaRegHeart />}
+                    </button>
+                )}
 
                 <button
                     onClick={() => onRemove && onRemove(track.id)}

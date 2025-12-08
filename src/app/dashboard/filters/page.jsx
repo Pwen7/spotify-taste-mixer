@@ -22,6 +22,7 @@ export default function FiltersPage() {
     })
 
     const [loading, setLoading] = useState(true)
+    const [initialized, setInitialized] = useState(false)
 
     useEffect(() => {
         const init = async () => {
@@ -44,12 +45,15 @@ export default function FiltersPage() {
             )
 
             setLoading(false)
+            setInitialized(true)
         }
 
         init()
     }, [router])
 
-    const handleNext = () => {
+    useEffect(() => {
+        if (!initialized) { return }
+
         const current = loadPreferences()
         savePreferences({
             ...current,
@@ -57,25 +61,24 @@ export default function FiltersPage() {
             popularity,
             mood,
         })
-        router.push('/dashboard/playlist')
-    }
+    }, [decades, popularity, mood, initialized])
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="p-4 min-h-screen  flex items-center justify-center">
                 <div className="flex items-center gap-3">
                     <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-[#1db954]" />
-                    <span className="text-sm text-gray-300">Loading filters…</span>
+                    <div className="text-sm text-gray-300">Loading filters…</div>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="space-y-6 max-w-5xl mx-auto">
-            <div className="grid gap-2 md:grid-cols-3">
+        <div className="p-4 min-h-screen ">
+            <div className="grid gap-4 lg:grid-cols-3">
                 {/* Decades */}
-                <div className="md:col-span-1">
+                <div>
                     <DecadeWidget
                         selectedDecades={decades}
                         onChange={setDecades}
@@ -83,7 +86,7 @@ export default function FiltersPage() {
                 </div>
 
                 {/* Popularity */}
-                <div className="md:col-span-1">
+                <div>
                     <PopularityWidget
                         popularity={popularity}
                         onChange={setPopularity}
@@ -91,22 +94,12 @@ export default function FiltersPage() {
                 </div>
 
                 {/* Mood */}
-                <div className="md:col-span-1">
+                <div>
                     <MoodWidget
                         mood={mood}
                         onChange={setMood}
                     />
                 </div>
-            </div>
-
-            <div className="flex justify-end">
-                <button
-                    type="button"
-                    onClick={handleNext}
-                    className="px-5 py-2.5 rounded-xl bg-[#1db954] text-[#121212] font-semibold hover:bg-[#1ed760] transition-colors"
-                >
-                    Next
-                </button>
             </div>
         </div>
     )

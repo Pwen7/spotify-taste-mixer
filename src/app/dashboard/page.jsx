@@ -41,30 +41,15 @@ export default function DashboardPage() {
         })
     }
 
-    // Reaccionar a toggleFavorite
-    const handleToggleFavorite = (track) => {
-        if (typeof window === 'undefined') return
-        const stored = JSON.parse(
-            localStorage.getItem('favorite_tracks') || '[]'
-        )
-        const exists = stored.find(t => t.id === track.id)
-        let updated
-        if (exists) {
-            updated = stored.filter(t => t.id !== track.id)
-        } else {
-            updated = [...stored, track]
-        }
-        localStorage.setItem('favorite_tracks', JSON.stringify(updated))
-        setFavorites(updated)
-    }
-
     return (
         <div className="p-4 min-h-screen">
             <h1 className="text-2xl font-bold mb-4">Your Favorite Tracks</h1>
             <PlaylistDisplay
                 playlist={favorites}
                 onRemove={handleRemoveFavorite}
-                onToggleFavorite={handleToggleFavorite}
+                onToggleFavorite={null}
+                onRefresh={null}
+                onAddMore={null}
             />
         </div>
     )

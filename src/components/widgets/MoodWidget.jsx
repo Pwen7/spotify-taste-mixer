@@ -40,7 +40,7 @@ export default function MoodWidget({ mood, onChange }) {
     }
 
     const renderSlider = (label, value) => (
-        <div className="mb-3">
+        <div className="mb-1">
             <div className="flex justify-between text-sm mb-1">
                 <div>{label}</div>
                 <div className="font-medium text-[#1db954]">{value}</div>
@@ -57,7 +57,7 @@ export default function MoodWidget({ mood, onChange }) {
     )
 
     return (
-        <div className="p-4 bg-[#121212] rounded-xl">
+        <div className="p-4 bg-[#121212] rounded-xl m-5 mb-0">
             <div className="flex items-center mb-3 font-bold">
                 <h2>Mood</h2>
             </div>

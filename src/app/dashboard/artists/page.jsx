@@ -8,20 +8,23 @@ import { loadPreferences, savePreferences } from "@/lib/preferences"
 export default function Artists() {
     const router = useRouter()
     const [artists, setArtists] = useState([])
+    const [initialized, setInitialized] = useState(false)
 
     useEffect(() => {
         const prefs = loadPreferences()
         setArtists(prefs.artists)
+        setInitialized(true)
     }, [])
 
-    const handleNext = () => {
-        const prefs = loadPreferences()
+    useEffect(() => {
+        if (!initialized) {return}
+
+        const current = loadPreferences()
         savePreferences({
-            ...prefs,
-            artists
+            ...current,
+            artists,
         })
-        router.push("/dashboard/genres")
-    }
+    }, [artists, initialized])
 
     return (
         <div>
@@ -29,13 +32,6 @@ export default function Artists() {
                 selectedArtists={artists}
                 onChange={setArtists}
             />
-
-            <button
-                className="mt-6 px-4 py-2 bg-[#1db954] text-[#121212] font-medium rounded"
-                onClick={handleNext}
-            >
-                Next
-            </button>
         </div>
     )
 }
