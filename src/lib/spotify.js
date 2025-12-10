@@ -43,10 +43,7 @@ export async function searchTracks(query, limit = 10) {
     return getApi(`/search?type=track&q=${q}&limit=${limit}`)
 }
 
-export function getArtistTopTracks(artistId, market) {
-    if (!artistId) { return null }
-    return getApi(`/artists/${artistId}/top-tracks?market=${market}`)
-}
+
 
 // esta deprecated
 // export async function getAudioFeatures(trackIds) {
@@ -56,7 +53,7 @@ export function getArtistTopTracks(artistId, market) {
 // }
 
 export async function generatePlaylist(preferences) {
-    const { artists, genres, decades, popularity } = preferences;
+    const { artists, genres, decades, popularity, moodGenres } = preferences;
     const token = await getValidAccessToken();
     if (!token) { return null }
     let allTracks = [];
@@ -76,11 +73,12 @@ export async function generatePlaylist(preferences) {
     // 2. Buscar por géneros
     for (const genre of genres) {
         const results = await fetch(
-            `https://api.spotify.com/v1/search?type=track&q=genre:${genre}&limit=20`,
+            `https://api.spotify.com/v1/search?type=track&q=genre:${genre}&limit=40`,
             {
                 headers: { 'Authorization': `Bearer ${token}` }
             }
         );
+
         const data = await results.json();
         allTracks.push(...data.tracks.items);
     }
@@ -131,6 +129,36 @@ export async function generatePlaylist(preferences) {
     //         return energiaOK && valenciaOK && baileOK && acusticaOK
     //     })
     // }
+
+    // 5. Filtrar por moodGenres
+    if (moodGenres.length > 0) {
+        const moodSet = new Set(moodGenres.map(g => g.toLowerCase()));
+
+        const artistIds = Array.from(new Set(
+            allTracks.flatMap(track => track.artists.map(a => a.id))
+        ));
+
+        const artistGenres = {};
+
+        const chunkSize = 50;
+        for (let i = 0; i < artistIds.length; i += chunkSize) {
+            const chunk = artistIds.slice(i, i + chunkSize);
+            const res = await fetch(
+                `https://api.spotify.com/v1/artists?ids=${chunk.join(',')}`,
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+            const data = await res.json();
+            data.artists.forEach(artist => {
+                artistGenres[artist.id] = (artist.genres || []).map(g => g.toLowerCase());
+            });
+        }
+
+        // filtrar generos artistas
+        allTracks = allTracks.filter(track => {
+            const trackGenres = track.artists.flatMap(a => artistGenres[a.id] || []);
+            return trackGenres.some(g => moodSet.has(g));
+        });
+    }
 
     // 6. Eliminar duplicados
     const uniqueTracks = Array.from(

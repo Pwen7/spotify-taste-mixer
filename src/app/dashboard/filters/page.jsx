@@ -1,17 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { getValidAccessToken } from '@/lib/auth'
 
 import DecadeWidget from '@/components/widgets/DecadeWidget'
 import PopularityWidget from '@/components/widgets/PopularityWidget'
-import MoodWidget from '@/components/widgets/MoodWidget'
+import MoodWidget, { MOODS, GENRES_BY_MOOD } from '@/components/widgets/MoodWidget'
 import { loadPreferences, savePreferences } from '@/lib/preferences'
 
 export default function FiltersPage() {
-    const router = useRouter()
-
     const [decades, setDecades] = useState([])
     const [popularity, setPopularity] = useState([0, 100])
     const [mood, setMood] = useState({
@@ -21,63 +17,60 @@ export default function FiltersPage() {
         acousticness: 50,
     })
 
-    const [loading, setLoading] = useState(true)
     const [initialized, setInitialized] = useState(false)
 
     useEffect(() => {
-        const init = async () => {
-            const token = await getValidAccessToken()
-            if (!token) {
-                router.push('/')
-                return
-            }
-
-            const prefs = loadPreferences()
-            setDecades(prefs.decades || [])
-            setPopularity(prefs.popularity || [0, 100])
-            setMood(
-                prefs.mood || {
-                    energy: 50,
-                    valence: 50,
-                    danceability: 50,
-                    acousticness: 50,
-                }
-            )
-
-            setLoading(false)
-            setInitialized(true)
-        }
-
-        init()
-    }, [router])
+        setDecades(loadPreferences().decades)
+        setPopularity(loadPreferences().popularity)
+        setMood(loadPreferences().mood)
+        setInitialized(true)
+    }, [])
 
     useEffect(() => {
         if (!initialized) { return }
-
         const current = loadPreferences()
         savePreferences({
             ...current,
             decades,
             popularity,
-            mood,
         })
-    }, [decades, popularity, mood, initialized])
+        console.log(`Popularity: ${popularity}`)
+        console.log(`Decades: ${decades}`)
+    }, [popularity, decades, initialized])
 
-    if (loading) {
-        return (
-            <div className="p-4 min-h-screen  flex items-center justify-center">
-                <div className="flex items-center gap-3">
-                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-[#1db954]" />
-                    <div className="text-sm text-gray-300">Loading filters…</div>
-                </div>
-            </div>
-        )
+    function getPresetNameForMood(mood) {
+        for (const [name, config] of Object.entries(MOODS)) {
+            if (
+                mood.energy === config.energy &&
+                mood.valence === config.valence &&
+                mood.danceability === config.danceability &&
+                mood.acousticness === config.acousticness
+            ) {
+                return name
+            }
+        }
+        return null
     }
+
+    useEffect(() => {
+        if (!initialized) return
+
+        const current = loadPreferences()
+        const presetName = getPresetNameForMood(mood)
+        const moodGenres = presetName ? GENRES_BY_MOOD[presetName] : []
+
+        savePreferences({
+            ...current,
+            mood,
+            moodGenres,
+        })
+
+    }, [mood, initialized])
 
     return (
         <div className="p-4 min-h-screen ">
             <div className="grid gap-4 lg:grid-cols-3">
-                {/* Decades */}
+
                 <div>
                     <DecadeWidget
                         selectedDecades={decades}
@@ -85,7 +78,6 @@ export default function FiltersPage() {
                     />
                 </div>
 
-                {/* Popularity */}
                 <div>
                     <PopularityWidget
                         popularity={popularity}
@@ -93,7 +85,6 @@ export default function FiltersPage() {
                     />
                 </div>
 
-                {/* Mood */}
                 <div>
                     <MoodWidget
                         mood={mood}

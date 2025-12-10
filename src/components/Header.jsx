@@ -93,7 +93,7 @@ export default function Header() {
                     {profile && (
                         <button
                             onClick={handleLogout}
-                            className="flex items-center justify-center rounded-full bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954]"
+                            className="flex items-center justify-center rounded-full bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954] cursor-pointer"
                             aria-label="Logout"
                         >
                             <MdOutlineExitToApp className="text-lg text-white hover:text-[#1db954]" />
@@ -105,7 +105,7 @@ export default function Header() {
                             {/* Humburger*/}
                             <button
                                 onClick={toggleMenu}
-                                className="md:hidden flex items-center justify-center rounded-full text-white bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954]"
+                                className="md:hidden flex items-center justify-center rounded-full text-white bg-black/70 p-2 transition-colors hover:bg-black hover:text-[#1db954] cursor-pointer"
                                 aria-label="Toggle menu"
                             >
                                 {isMenuOpen ? (

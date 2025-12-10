@@ -42,14 +42,14 @@ export default function PlaylistDisplay({ playlist, onRemove, onToggleFavorite, 
                             <button
                                 type="button"
                                 onClick={onRefresh}
-                                className="px-3 py-1.5 bg-[#212121] text-sm text-gray-300 rounded hover:bg-[#535353] transition-colors"
+                                className="px-3 py-1.5 bg-[#212121] text-sm text-gray-300 rounded hover:bg-[#535353] transition-colors cursor-pointer"
                             >
                                 Refresh
                             </button>
                             <button
                                 type="button"
                                 onClick={onAddMore}
-                                className="px-3 py-1.5 bg-[#1db954] text-sm font-medium text-[#121212] rounded hover:bg-[#1ed760] transition-colors"
+                                className="px-3 py-1.5 bg-[#1db954] text-sm font-medium text-[#121212] rounded hover:bg-[#1ed760] transition-colors cursor-pointer"
                             >
                                 Add More
                             </button>
@@ -58,9 +58,9 @@ export default function PlaylistDisplay({ playlist, onRemove, onToggleFavorite, 
                     <button
                         type="button"
                         onClick={handleSaveToSpotify}
-                        className="px-3 py-1.5 bg-[#1db954] text-sm text-[#121212] rounded hover:bg-[#1ed760] transition-colors"
+                        className="px-3 py-1.5 bg-[#1db954] text-sm text-[#121212] rounded hover:bg-[#1ed760] transition-colors cursor-pointer"
                     >
-                        Save on Spotify
+                        {saving ? 'Saving...' : 'Save on Spotify'}
                     </button>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-const MOODS = {
+export const MOODS = {
     Happy: {
         energy: 75,
         valence: 85,
@@ -25,7 +25,7 @@ const MOODS = {
     },
 }
 
-const GENRES_BY_MOOD = {
+export const GENRES_BY_MOOD = {
     Happy: [
         "pop", "dance", "summer", "party", "latin", "funk", "soul",
         "dancehall", "reggaeton", "tropical", "house", "edm",
@@ -54,14 +54,12 @@ export default function MoodWidget({ mood, onChange }) {
         onChange({
             ...mood,
             [key]: Number(value),
-            genres: mood.genres,
         })
     }
 
     const applyMood = (presetName) => {
         onChange({
             ...MOODS[presetName],
-            genres: GENRES_BY_MOOD[presetName],
         })
     }
 
