@@ -1,5 +1,3 @@
-'use client'
-import { useState } from 'react'
 import { MdCheckBox, MdCheckBoxOutlineBlank } from "react-icons/md"
 
 const DECADES = [
@@ -7,12 +5,6 @@ const DECADES = [
 ]
 
 export default function DecadeWidget({ selectedDecades, onChange }) {
-    const [search, setSearch] = useState('')
-
-    const filtered = DECADES.filter(d =>
-        d.toLowerCase().includes(search.toLowerCase())
-    )
-
     function toggleDecade(decade) {
         if (selectedDecades.includes(decade)) {
             onChange(selectedDecades.filter(d => d !== decade))
@@ -21,11 +13,11 @@ export default function DecadeWidget({ selectedDecades, onChange }) {
         }
     }
     return (
-        <div className="p-4 bg-[#121212] rounded-xl m-5 mb-0">
+        <div className="p-4 bg-[#121212] rounded-xl m-2 mb-0">
             <h2 className="font-bold mb-2">Decades</h2>
             <div className="max-h-40 overflow-y-auto space-y-1">
                 <div className="flex flex-wrap gap-2">
-                    {filtered.map(decade => {
+                    {DECADES.map(decade => {
                         const isSelected = selectedDecades.includes(decade)
                         return (
                             <button

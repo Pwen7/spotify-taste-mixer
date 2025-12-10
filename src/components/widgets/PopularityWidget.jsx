@@ -24,7 +24,7 @@ export default function PopularityWidget({ popularity, onChange }) {
     }
 
     return (
-        <div className="p-4 bg-[#121212] rounded-xl m-5 mb-0">
+        <div className="p-4 bg-[#121212] rounded-xl m-2 mb-0">
             <div className="flex justify-between items-center mb-3 font-bold">
                 <h2>Popularity</h2>
                 <div className='text-[#1db954]'>

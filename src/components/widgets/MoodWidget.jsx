@@ -25,6 +25,28 @@ const MOODS = {
     },
 }
 
+const GENRES_BY_MOOD = {
+    Happy: [
+        "pop", "dance", "summer", "party", "latin", "funk", "soul",
+        "dancehall", "reggaeton", "tropical", "house", "edm",
+    ],
+
+    Sad: [
+        "acoustic", "sad", "piano", "indie", "emo", "ambient", "folk",
+        "singer-songwriter", "rainy-day", "study", "romance"
+    ],
+
+    Energetic: [
+        "electronic", "edm", "hard-rock", "rock", "metal", "punk",
+        "techno", "house", "dubstep", "trance", "drum-and-bass"
+    ],
+
+    Calm: [
+        "chill", "ambient", "jazz", "classical", "acoustic", "soul",
+        "lo-fi", "study", "bossanova", "bluegrass"
+    ],
+}
+
 export default function MoodWidget({ mood, onChange }) {
     const { energy, valence, danceability, acousticness } = mood
 
@@ -32,11 +54,15 @@ export default function MoodWidget({ mood, onChange }) {
         onChange({
             ...mood,
             [key]: Number(value),
+            genres: mood.genres,
         })
     }
 
     const applyMood = (presetName) => {
-        onChange(MOODS[presetName])
+        onChange({
+            ...MOODS[presetName],
+            genres: GENRES_BY_MOOD[presetName],
+        })
     }
 
     const renderSlider = (label, value) => (
@@ -57,7 +83,7 @@ export default function MoodWidget({ mood, onChange }) {
     )
 
     return (
-        <div className="p-4 bg-[#121212] rounded-xl m-5 mb-0">
+        <div className="p-4 bg-[#121212] rounded-xl m-2 mb-0">
             <div className="flex items-center mb-3 font-bold">
                 <h2>Mood</h2>
             </div>

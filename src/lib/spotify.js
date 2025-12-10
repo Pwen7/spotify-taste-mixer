@@ -1,13 +1,9 @@
 import { getValidAccessToken, logout } from './auth';
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+function randomList(array) {
+    return array.sort(() => Math.random() - 0.5);
 }
-  
+
 async function getApi(path) {
     const token = await getValidAccessToken()
 
@@ -142,6 +138,61 @@ export async function generatePlaylist(preferences) {
     );
 
     // 7. Barajar para que en cada llamada tengamos orden distinto
-    return shuffle(uniqueTracks)
+    return randomList(uniqueTracks)
 }
 
+export async function savePlaylistToSpotify(name, description, tracks, isPublic = false) {
+    const token = await getValidAccessToken()
+    if (!token) return null
+
+    const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+    }
+
+    const me = await getUserProfile()
+
+    // crear playlist
+    const created = await fetch(
+        `https://api.spotify.com/v1/users/${me.id}/playlists`,
+        {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+                name,
+                description,
+                public: isPublic,
+            }),
+        }
+    )
+
+    if (!created.ok) {
+        console.error('ERROR creating playlist on Spotify', created.status)
+        return null
+    }
+
+    const playlistData = await created.json()
+    const playlistId = playlistData.id
+
+    // tracks (max 100 por peticion)
+    const uris = tracks.map(t => t.uri).filter(Boolean)
+    const chunkSize = 100
+
+    for (let i = 0; i < uris.length; i += chunkSize) {
+        const chunk = uris.slice(i, i + chunkSize)
+        const addRes = await fetch(
+            `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+            {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ uris: chunk }),
+            }
+        )
+
+        if (!addRes.ok) {
+            console.error('ERROR adding tracks to playlist', addRes.status)
+        }
+    }
+
+    return playlistData
+}

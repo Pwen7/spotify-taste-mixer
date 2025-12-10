@@ -1,10 +1,29 @@
+
+'use client'
+
+import { useState } from "react"
+import { savePlaylistToSpotify } from "@/lib/spotify"
 import TrackCard from '@/components/TrackCard'
 
 export default function PlaylistDisplay({ playlist, onRemove, onToggleFavorite, onRefresh, onAddMore }) {
     const canRefresh = typeof onRefresh === 'function'
     const canAddMore = typeof onAddMore === 'function'
     const showControls = canRefresh || canAddMore
+    const [saving, setSaving] = useState(false)
 
+    const handleSaveToSpotify = async () => {
+        if (!playlist.length || saving) { return }
+        setSaving(true)
+        try {
+            const name = "Spotify Taste Mixer Playlist"
+            const description = "Playlist generated with Spotify Taste Mixer"
+            const result = await savePlaylistToSpotify(name, description, playlist, false)
+        } catch (e) {
+            console.error('Error saving playlist to Spotify', e)
+        } finally {
+            setSaving(false)
+        }
+    }
 
     return (
         <div className="p-4 bg-[#121212] rounded-xl border border-[#2a2a2a] m-5">
@@ -17,25 +36,33 @@ export default function PlaylistDisplay({ playlist, onRemove, onToggleFavorite, 
                         </div>
                     )}
                 </div>
-
-                {showControls && (
-                    <div className="flex gap-2">
-                        <button
-                            type="button"
-                            onClick={onRefresh}
-                            className="px-3 py-1.5 bg-[#212121] text-sm text-gray-300 rounded hover:bg-[#535353] transition-colors"
-                        >
-                            Refresh
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onAddMore}
-                            className="px-3 py-1.5 bg-[#1db954] text-sm font-medium text-[#121212] rounded hover:bg-[#1ed760] transition-colors"
-                        >
-                            Add More
-                        </button>
-                    </div>
-                )}
+                <div className="flex flex-wrap gap-2">
+                    {showControls && (
+                        <div className="flex gap-1">
+                            <button
+                                type="button"
+                                onClick={onRefresh}
+                                className="px-3 py-1.5 bg-[#212121] text-sm text-gray-300 rounded hover:bg-[#535353] transition-colors"
+                            >
+                                Refresh
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onAddMore}
+                                className="px-3 py-1.5 bg-[#1db954] text-sm font-medium text-[#121212] rounded hover:bg-[#1ed760] transition-colors"
+                            >
+                                Add More
+                            </button>
+                        </div>
+                    )}
+                    <button
+                        type="button"
+                        onClick={handleSaveToSpotify}
+                        className="px-3 py-1.5 bg-[#1db954] text-sm text-[#121212] rounded hover:bg-[#1ed760] transition-colors"
+                    >
+                        Save on Spotify
+                    </button>
+                </div>
             </div>
 
             {/* Lista de tracks */}

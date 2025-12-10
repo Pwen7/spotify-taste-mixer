@@ -47,7 +47,7 @@ export default function PlaylistPage() {
             const tracks = await generatePlaylist(lastPreferences)
             const refreshed = (tracks || []).slice(0, trackCount)
             setPlaylist(refreshed)
-            // trackCount ya es el mismo
+            // conservar trackCount
         } catch (e) {
             console.error('ERROR refreshing playlist', e)
         } finally {
