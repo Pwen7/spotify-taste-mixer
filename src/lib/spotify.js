@@ -140,7 +140,7 @@ export async function generatePlaylist(preferences) {
 
         const artistGenres = {};
 
-        const chunkSize = 50;
+        const chunkSize = 40;
         for (let i = 0; i < artistIds.length; i += chunkSize) {
             const chunk = artistIds.slice(i, i + chunkSize);
             const res = await fetch(
