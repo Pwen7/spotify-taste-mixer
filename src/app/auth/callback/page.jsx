@@ -36,10 +36,8 @@ export default function CallbackPage() {
             return;
         }
 
-        // Limpiar state después de validar
         localStorage.removeItem('spotify_auth_state');
 
-        // Marcar como procesado
         hasProcessed.current = true;
 
         // Intercambiar código por token
@@ -57,7 +55,6 @@ export default function CallbackPage() {
                     throw new Error(data.error || 'Error al obtener token');
                 }
 
-                // Guardar tokens
                 saveTokens(data.access_token, data.refresh_token, data.expires_in);
 
                 // Redirigir al dashboard

@@ -66,15 +66,14 @@ export async function getValidAccessToken() {
     const expiration = localStorage.getItem('spotify_token_expiration');
     const refreshToken = localStorage.getItem('spotify_refresh_token');
 
-    // Si no hay refresh token, no podemos hacer nada
     if (!refreshToken) return null;
 
-    // Si el token existe y no está caducado, úsalo
+    // valido
     if (token && expiration && Date.now() < parseInt(expiration)) {
         return token;
     }
 
-    // Si está caducado, intentamos refrescarlo
+    // caducado
     try {
         const res = await fetch('/api/refresh-token', {
             method: 'POST',
@@ -85,7 +84,6 @@ export async function getValidAccessToken() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Error al refrescar token');
 
-        // Guardar nuevo token manteniendo el mismo refresh token
         saveTokens(data.access_token, refreshToken, data.expires_in);
         return data.access_token;
     } catch (err) {
@@ -95,12 +93,11 @@ export async function getValidAccessToken() {
     }
 }
 
-// Verificar si hay token válido
+// Verificar token válido
 export function isAuthenticated() {
     return getAccessToken() !== null;
 }
 
-// Cerrar sesión
 export function logout() {
     localStorage.removeItem('spotify_token');
     localStorage.removeItem('spotify_refresh_token');

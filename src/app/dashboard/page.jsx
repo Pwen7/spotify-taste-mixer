@@ -20,7 +20,6 @@ export default function DashboardPage() {
         check()
     }, [router])
 
-    // Cargar favoritos desde localStorage
     useEffect(() => {
         if (typeof window === 'undefined') return
 
